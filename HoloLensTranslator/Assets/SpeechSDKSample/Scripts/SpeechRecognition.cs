@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Globalization;
 using System;
 using System.Diagnostics;
+using TMPro;
 #if PLATFORM_ANDROID
 using UnityEngine.Android;
 #endif
@@ -29,18 +30,16 @@ public class SpeechRecognition : MonoBehaviour
 {
     // Public fields in the Unity inspector
     [Tooltip("Unity UI Text component used to report potential errors on screen.")]
-    public Text RecognizedText;
+    public TMP_Text RecognizedText;
     [Tooltip("Unity UI Text component used to post recognition results on screen.")]
-    public Text ErrorText;
+    public TMP_Text ErrorText;
 
     // Dropdown lists used to select translation languages, if enabled
     public Toggle TranslationEnabled;
-    [Tooltip("Target language #1 for translation (if enabled).")]
-    public Dropdown Languages1;
-    [Tooltip("Target language #2 for translation (if enabled).")]
-    public Dropdown Languages2;
-    [Tooltip("Target language #3 for translation (if enabled).")]
-    public Dropdown Languages3;
+    [Tooltip("Target input language if enabld.")]
+    public TMP_Dropdown inputLanguages;
+    [Tooltip("Target output language if enabled.")]
+    public TMP_Dropdown outputLanguages;
 
     // Used to show live messages on screen, must be locked to avoid threading deadlocks since
     // the recognition events are raised in a separate thread
@@ -60,7 +59,60 @@ public class SpeechRecognition : MonoBehaviour
     // The current language of origin is locked to English-US in this sample. Change this
     // to another region & language code to use a different origin language.
     // e.g. fr-fr, es-es, etc.
-    string fromLanguage = "en-us";
+    string fromLanguage = "es-es";
+
+    //    zh_Chinese_Mandarin,
+    //    en_English,
+    //    fr_French,
+    //    de_German,
+    //    ja_Japanese,
+    //    ko_Korean,
+    //    pt_Portuguese_Brazilian,
+    //    ru_Russian,
+    //    es_Spanish
+
+    public void DropdownHandler (int val)
+    {
+        {
+            if (val == 0)
+            {
+                fromLanguage = "zh-CN";
+            }
+            if (val == 1)
+            {
+                fromLanguage = "en-US";
+            }
+            if (val == 2)
+            {
+                fromLanguage = "fr-FR";
+            }
+            if (val == 3)
+            {
+                fromLanguage = "de-DE";
+            }
+            if (val == 4)
+            {
+                fromLanguage = "ja-JP";
+            }
+            if (val == 5)
+            {
+                fromLanguage = "ko-KR";
+            }
+            if (val == 6)
+            {
+                fromLanguage = "pt-BR";
+            }
+            if (val == 7)
+            {
+                fromLanguage = "ru-RU";
+            }
+            if (val == 8)
+            {
+                fromLanguage = "es-ES";
+            }
+            return;
+        }
+    }
 
     private bool micPermissionGranted = false;
 #if PLATFORM_ANDROID
@@ -260,12 +312,8 @@ public class SpeechRecognition : MonoBehaviour
         {
             SpeechTranslationConfig config = SpeechTranslationConfig.FromSubscription(SpeechServiceAPIKey, SpeechServiceRegion);
             config.SpeechRecognitionLanguage = fromLanguage;
-            if (Languages1.captionText.text.Length > 0)
-                config.AddTargetLanguage(ExtractLanguageCode(Languages1.captionText.text));
-            if (Languages2.captionText.text.Length > 0)
-                config.AddTargetLanguage(ExtractLanguageCode(Languages2.captionText.text));
-            if (Languages3.captionText.text.Length > 0)
-                config.AddTargetLanguage(ExtractLanguageCode(Languages3.captionText.text));
+            if (outputLanguages.captionText.text.Length > 0)
+                config.AddTargetLanguage(ExtractLanguageCode(outputLanguages.captionText.text));
             translator = new TranslationRecognizer(config);
 
             if (translator != null)
