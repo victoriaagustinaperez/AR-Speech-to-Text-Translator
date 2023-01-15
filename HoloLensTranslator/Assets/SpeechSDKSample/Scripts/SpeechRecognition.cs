@@ -156,13 +156,14 @@ public class SpeechRecognition : MonoBehaviour
         errorString = "";
         if (micPermissionGranted)
         {
-            if (TranslationEnabled.isOn)
+            if (!TranslationEnabled.isOn)
             {
-                StartContinuousTranslation();
+                StartContinuousRecognition();
+             
             }
             else
             {
-                StartContinuousRecognition();
+                StartContinuousTranslation();
             }
         }
         else
